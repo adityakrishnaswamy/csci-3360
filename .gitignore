@@ -1,4 +1,5 @@
 r-models/.Rproj.user/
 scala-models/project/
 scala-models/target/
+*.jar
 .DS_Store
