@@ -3,3 +3,5 @@ scala-models/project/
 scala-models/target/
 *.jar
 .DS_Store
+.Rhistory
+.Rproj.user
