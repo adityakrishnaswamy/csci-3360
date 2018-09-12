@@ -5,3 +5,4 @@ scala-models/target/
 .DS_Store
 .Rhistory
 .Rproj.user
+.RData
