@@ -1,6 +1,7 @@
 r-models/.Rproj.user/
 scala-models/project/
 scala-models/target/
+scala-models/lib/
 *.jar
 .DS_Store
 .Rhistory
