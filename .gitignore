@@ -1,6 +1,8 @@
 r-models/.Rproj.user/
 scala-models/project/
 scala-models/target/
+spark-models/project/
+spark-models/target/
 scala-models/lib/
 *.jar
 .DS_Store
