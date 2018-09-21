@@ -67,9 +67,9 @@ object Models extends App{
     println(rg.vif)
 
 
-    Plotting predictions
-    val t = VectorD.range(0,mat.dim1)
-    val yp = rg.predict(new_x)
-    new Plot(t,y,yp,"regression")
+    //Plotting predictions
+    // val t = VectorD.range(0,mat.dim1)
+    // val yp = rg.predict(new_x)
+    // new Plot(t,y,yp,"regression")
 }
 
