@@ -1,8 +1,9 @@
 r-models/.Rproj.user/
 scala-models/project/
 scala-models/target/
-spark-models/project/
-spark-models/target/
+spark-models/derby.log
+spark-models/metastore_db/
+spark-models/.ipynb_checkpoints/
 scala-models/lib/
 *.jar
 .DS_Store

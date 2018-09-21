@@ -26,10 +26,11 @@ object Models extends App{
     /////// Model 1 ///////
     var rg = new Regression(x,y)
     rg.train().eval()
+    val b1 = rg.coefficient
     //Display quality of fit values
     banner("Model 1 QoF Information")
     rg.fitMap foreach {x => println(x._1 + ":" + x._2)}
-    rg.summary()
+    println(rg.summary(b1))
 
     ////// Model 2 - Without WPI ///////
     //Select columns excluding WPI
@@ -37,7 +38,6 @@ object Models extends App{
     rg = new Regression(new_x,y)
     rg.train().eval()
     val b = rg.coefficient
-    val stdErr = rg.residual
     banner("Model 2 QoF Information")
     rg.fitMap foreach {x => println(x._1 + ":" + x._2)}
     println(rg.summary(b))
@@ -52,7 +52,7 @@ object Models extends App{
         cols_i += x_
     }
 
-    banner("Backward Elim Test")
+    banner("Backward Elim")
     val cols = Set(0) ++ Array.range(1,new_x.dim2)
     for(i <- 1 until new_x.dim2){
         val(x,b,fit) = rg.backwardElim(cols)
@@ -67,7 +67,7 @@ object Models extends App{
     println(rg.vif)
 
 
-    //Plotting predictions
+    Plotting predictions
     val t = VectorD.range(0,mat.dim1)
     val yp = rg.predict(new_x)
     new Plot(t,y,yp,"regression")
