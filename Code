@@ -1,0 +1,119 @@
+#CSCI 3360 Project 1
+#Authors: Aditya Krishnaswamy and Dylan Ogle
+#Date: September 21, 2018
+
+
+library(readxl) #we need to read in our dataset which is in .xlsx. readxl allows us to read xlsx files
+
+#using read_xlsx, from readxl, we saved the dataset into dataset
+dataset=read_xlsx(path="Documents/General Classes/Computer Science/CSCI 3360/dataset1.xlsx")
+
+#using colnames() we printed out the columns wihin the dataset.
+colnames(dataset)
+
+#We created scatter plots of Money printed (y-axis) with each explanatory variable, GDP and interest rate and WPI.
+#cor() is used to calculate correlation between x and y
+##plot for Money printed vs GDP
+plot(dataset$GDP,dataset$Money_printed,main = "Money Printed vs GDP from 1970 to 2004",xlab="GDP",ylab="Total Money Printed for a Year")
+cor(dataset$GDP,dataset$Money_printed) #correlation = .9762127 --> high positive correlation
+###this scatterplot appears to be approximately linear, but may also suggest a slight exponential growth.
+
+##plot for Money printed vs Interest Rate
+plot(dataset$Interest_RATE,dataset$Money_printed,main = "Money Printed vs Interest Rate from 1970 to 2004",xlab="Interest Rate",ylab="Total Money Printed for a Year")
+cor(dataset$Interest_RATE,dataset$Money_printed) #correlation = -.2991204 --> low negative correlation
+###this scatterplot appears to be approximately linear, but may also suggest a nonlinear relationship.
+
+##plot for Money printed vs WPI
+plot(dataset$WPI,dataset$Money_printed,main = "Money Printed vs WPI from 1970 to 2004",xlab="WPI",ylab="Total Money Printed for a Year")
+cor(dataset$WPI,dataset$Money_printed) #correlation = .9546406 --> high positive correlation
+###this scatterplot appears to be approximately linear, but may also suggest a slight exponential growth.
+
+#multiple regression model is created using GDP, interest rate, and WPI to predict money printed.
+model1=lm(Money_printed~GDP+Interest_RATE+WPI,data=dataset)
+summary(model1)
+###Call:
+###lm(formula = Money_printed ~ GDP + Interest_RATE + WPI, data = dataset)
+###Residuals:
+###  Min     1Q Median     3Q    Max 
+###-46875  -7027   1387  15068  46249 
+###Coefficients:
+###  Estimate Std. Error t value Pr(>|t|)    
+###(Intercept)   -1.759e+04  5.052e+04  -0.348  0.73008    
+###GDP            2.975e-01  8.787e-02   3.385  0.00195 **--> p-value is significant
+###  Interest_RATE -1.626e+04  2.919e+03  -5.570 4.19e-06 *** --> p-value is significant with interest rate
+###  WPI            2.943e+01  9.038e+02   0.033  0.97423    --> p-value is not significant, WPI is not significant
+###  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+###Residual standard error: 22770 on 31 degrees of freedom
+###Multiple R-squared:  0.9848,	Adjusted R-squared:  0.9834 --> multiple regression model explains 98.34% of variation in Money printed
+###F-statistic: 670.4 on 3 and 31 DF,  p-value: < 2.2e-16 --> F-statistic is really high and p-value is significant, so there is some significant relationship to predict money printed
+
+#because WPI is not significant, we removed WPI from model to predict money printed by GDP and interest rate alone using multiple linear regression
+model2=lm(Money_printed~GDP+Interest_RATE,data=dataset)
+summary(model2)
+###Call:
+###  lm(formula = Money_printed ~ GDP + Interest_RATE, data = dataset)
+###Residuals:
+###  Min     1Q Median     3Q    Max 
+###-47055  -7168   1432  14998  46008 
+###Coefficients:
+###  Estimate Std. Error t value Pr(>|t|)    
+###(Intercept)   -1.906e+04  2.192e+04  -0.870    0.391    
+###GDP            3.003e-01  6.913e-03  43.443  < 2e-16 *** --> p-value is significant with GDP
+###  Interest_RATE -1.619e+04  1.977e+03  -8.191 2.35e-09 *** --> p-value is significant with Interest rate
+###  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+###Residual standard error: 22420 on 32 degrees of freedom
+###Multiple R-squared:  0.9848,	Adjusted R-squared:  0.9839 --> multiple regression model explains 98.39% of the variation in money printed
+###F-statistic:  1038 on 2 and 32 DF,  p-value: < 2.2e-16 -->the correlation and model significance is statistically significant due to high F statistic
+
+#to run forward and backward selection a null model was created to predict money printe.d
+null=lm(Money_printed~1,data=dataset)
+
+#forward selection was run using step() using model1 (model with WPI, interest rate, and GDP) as maximum model and null as minimum
+##forward selection decided that the best multiple regression model predicted money printed using GDP and interest rate alone.
+step(null,scope=list(lower=null,upper=model1),direction="forward") ###output below
+###Start:  AIC=846.66
+###Money_printed ~ 1
+###Df  Sum of Sq        RSS    AIC
+###+ GDP            1 1.0093e+12 4.9787e+10 741.65
+###+ WPI            1 9.6521e+11 9.3902e+10 763.86
+###+ Interest_RATE  1 9.4762e+10 9.6435e+11 845.38
+###<none>                        1.0591e+12 846.66
+###Step:  AIC=741.65
+###Money_printed ~ GDP
+###Df  Sum of Sq        RSS    AIC
+###+ Interest_RATE  1 3.3709e+10 1.6078e+10 704.09
+###+ WPI            1 1.7618e+10 3.2170e+10 728.36
+###<none>                        4.9787e+10 741.65
+###Step:  AIC=704.09
+###Money_printed ~ GDP + Interest_RATE
+###Df Sum of Sq        RSS    AIC
+###<none>              1.6078e+10 704.09
+###+ WPI   1    549884 1.6078e+10 706.09
+###Call:
+###  lm(formula = Money_printed ~ GDP + Interest_RATE, data = dataset)
+###
+###Coefficients:
+###  (Intercept)            GDP  Interest_RATE  
+###-1.906e+04      3.003e-01     -1.619e+04  
+
+#backward selection was run using step() using model1 (model with WPI, interest rate, and GDP) as maximum model and null as minimum
+##backward selection decided that the best multiple regression model predicted money printed using GDP and interest rate alone.
+step(model1,data=dataset,direction="backward")
+###Start:  AIC=706.09
+###Money_printed ~ GDP + Interest_RATE + WPI
+###Df  Sum of Sq        RSS    AIC
+###- WPI            1 5.4988e+05 1.6078e+10 704.09
+###<none>                        1.6078e+10 706.09
+###- GDP            1 5.9441e+09 2.2022e+10 715.10
+###- Interest_RATE  1 1.6092e+10 3.2170e+10 728.36
+###Step:  AIC=704.09
+###Money_printed ~ GDP + Interest_RATE
+###Df  Sum of Sq        RSS    AIC
+###<none>                        1.6078e+10 704.09
+###- Interest_RATE  1 3.3709e+10 4.9787e+10 741.65
+###- GDP            1 9.4827e+11 9.6435e+11 845.38
+###Call:
+###  lm(formula = Money_printed ~ GDP + Interest_RATE, data = dataset)
+###Coefficients:
+###  (Intercept)            GDP  Interest_RATE  
+###-1.906e+04      3.003e-01     -1.619e+04
